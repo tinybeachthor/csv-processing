@@ -1,15 +1,45 @@
 //! Type representation of a u64 with 4 decimals.
 
+use std::ops::{Add, Sub};
+
 use serde::{Deserialize, Deserializer, de};
 use serde::{Serialize, Serializer};
 
 const DECIMAL_DIGITS: usize = 4;
 
 /// Type representation of a u64 with fixed decimals.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FourDecimals {
     pub integer: u64,
     pub decimal: u16,
+}
+impl Add for FourDecimals {
+    type Output = Self;
+    fn add(self, other: Self) -> Self {
+        let mut integer = self.integer + other.integer;
+        let mut decimal = self.decimal + other.decimal;
+        if decimal >= 10000 {
+            integer += 1;
+            decimal -= 10000;
+        }
+
+        Self { integer, decimal }
+    }
+}
+impl Sub for FourDecimals {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self {
+        let mut integer = self.integer - other.integer;
+        let decimal = if other.decimal > self.decimal {
+            integer -= 1;
+            10000 - (other.decimal - self.decimal)
+        }
+        else {
+            self.decimal - other.decimal
+        };
+
+        Self { integer, decimal }
+    }
 }
 
 impl<'de> Deserialize<'de> for FourDecimals {
@@ -66,6 +96,35 @@ pub mod test {
 
     use std::io::Cursor;
     use csv::{ReaderBuilder, Writer};
+
+    #[test]
+    fn add_simple() {
+        let a = FourDecimals { integer: 1, decimal: 2 };
+        let b = FourDecimals { integer: 20, decimal: 10 };
+        let r = FourDecimals { integer: 21, decimal: 12 };
+        assert_eq!(a + b, r);
+    }
+    #[test]
+    fn add_overflow() {
+        let a = FourDecimals { integer: 1, decimal: 6000 };
+        let b = FourDecimals { integer: 1, decimal: 9000 };
+        let r = FourDecimals { integer: 3, decimal: 5000 };
+        assert_eq!(a + b, r);
+    }
+    #[test]
+    fn sub_simple() {
+        let a = FourDecimals { integer: 21, decimal: 12 };
+        let b = FourDecimals { integer: 20, decimal: 10 };
+        let r = FourDecimals { integer: 1, decimal: 2 };
+        assert_eq!(a - b, r);
+    }
+    #[test]
+    fn sub_overflow() {
+        let a = FourDecimals { integer: 3, decimal: 5000 };
+        let b = FourDecimals { integer: 1, decimal: 9000 };
+        let r = FourDecimals { integer: 1, decimal: 6000 };
+        assert_eq!(a - b, r);
+    }
 
     #[test]
     pub fn deserialize_integer() {
