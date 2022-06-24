@@ -8,3 +8,5 @@
 mod four_decimals;
 
 mod transaction;
+
+mod client;
