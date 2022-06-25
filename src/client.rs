@@ -23,17 +23,17 @@ pub struct Client {
     locked: bool,
 }
 impl Client {
-    /// Get the client total.
+    /// Get the [Client] total.
     pub fn total(&self) -> FourDecimals {
-        self.available.clone() + self.held.clone()
+        self.available + self.held
     }
 }
 impl Into<ClientRaw> for Client {
     fn into(self) -> ClientRaw {
         ClientRaw {
             client: self.id,
-            available: self.available.clone(),
-            held: self.held.clone(),
+            available: self.available,
+            held: self.held,
             total: self.available + self.held,
             locked: self.locked,
         }

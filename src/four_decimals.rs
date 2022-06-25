@@ -8,10 +8,15 @@ use serde::{Serialize, Serializer};
 const DECIMAL_DIGITS: usize = 4;
 
 /// Type representation of a u64 with fixed decimals.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct FourDecimals {
     pub integer: u64,
     pub decimal: u16,
+}
+impl Default for FourDecimals {
+    fn default() -> Self {
+        Self { integer: 0, decimal: 0 }
+    }
 }
 impl Add for FourDecimals {
     type Output = Self;
