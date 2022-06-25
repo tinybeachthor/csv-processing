@@ -15,3 +15,6 @@ pub use client::Client;
 
 mod errors;
 pub use errors::MyError;
+
+mod clients;
+pub use clients::Clients;

@@ -5,7 +5,7 @@ use std::fs::File;
 
 use csv;
 
-use csv_processing::Transaction;
+use csv_processing::{Transaction, Clients};
 
 fn main() -> io::Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -27,16 +27,24 @@ fn process(input: &Path) -> io::Result<()> {
         .flexible(true)
         .has_headers(true)
         .from_reader(file);
-    let mut wtr = csv::WriterBuilder::new()
-        .has_headers(true)
-        .from_writer(io::stdout());
+
+    let mut clients = Clients::new();
 
     for result in rdr.deserialize() {
         let transaction: Transaction = result?;
 
-        wtr.serialize(transaction)?;
+        clients
+            .apply(transaction)
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
     }
 
+    let mut wtr = csv::WriterBuilder::new()
+        .has_headers(true)
+        .from_writer(io::stdout());
+    for client in clients {
+        wtr.serialize(client)?;
+    }
     wtr.flush()?;
+
     Ok(())
 }

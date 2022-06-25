@@ -25,6 +25,15 @@ pub struct Client {
     locked: bool,
 }
 impl Client {
+    /// Create a new [Client].
+    pub fn new(id: u16) -> Self {
+        Self {
+            id,
+            available: FourDecimals::default(),
+            held: FourDecimals::default(),
+            locked: false,
+        }
+    }
     /// Get the [Client] total.
     pub fn total(&self) -> FourDecimals {
         self.available + self.held
