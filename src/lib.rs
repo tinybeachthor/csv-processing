@@ -8,5 +8,7 @@
 mod four_decimals;
 
 mod transaction;
+pub use transaction::{Transaction, TransactionType};
 
 mod client;
+pub use client::Client;

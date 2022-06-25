@@ -8,10 +8,15 @@ use crate::four_decimals::FourDecimals;
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum TransactionType {
+    /// Deposit.
     Deposit,
+    /// Withdrawal.
     Withdrawal,
+    /// Dispute.
     Dispute,
+    /// Resolve.
     Resolve,
+    /// Chargeback.
     Chargeback,
 }
 
