@@ -12,3 +12,6 @@ pub use transaction::{Transaction, TransactionType};
 
 mod client;
 pub use client::Client;
+
+mod errors;
+pub use errors::MyError;
