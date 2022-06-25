@@ -3,6 +3,8 @@
 use serde::Serialize;
 
 use crate::four_decimals::FourDecimals;
+use crate::{Transaction, TransactionType};
+use crate::MyError;
 
 #[derive(Debug, Serialize, PartialEq, Eq)]
 struct ClientRaw {
@@ -26,6 +28,29 @@ impl Client {
     /// Get the [Client] total.
     pub fn total(&self) -> FourDecimals {
         self.available + self.held
+    }
+
+    /// Apply a [Transaction].
+    pub fn apply(&mut self, transaction: Transaction) -> Result<(), MyError> {
+        let amount = transaction.amount.unwrap_or_default();
+
+        match transaction.r#type {
+            TransactionType::Deposit => {
+                self.available = self.available + amount;
+            },
+            TransactionType::Withdrawal => {
+                if amount > self.available {
+                    return Err(
+                        MyError::BalanceLowForWithdrawal(self.id, transaction.tx))
+                }
+                self.available = self.available - amount;
+            },
+            TransactionType::Dispute => unimplemented!(),
+            TransactionType::Resolve => unimplemented!(),
+            TransactionType::Chargeback => unimplemented!(),
+        };
+
+        Ok(())
     }
 }
 impl Into<ClientRaw> for Client {

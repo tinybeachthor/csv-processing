@@ -8,7 +8,7 @@ use serde::{Serialize, Serializer};
 const DECIMAL_DIGITS: usize = 4;
 
 /// Type representation of a u64 with fixed decimals.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd)]
 pub struct FourDecimals {
     pub integer: u64,
     pub decimal: u16,

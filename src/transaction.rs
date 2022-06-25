@@ -23,10 +23,14 @@ pub enum TransactionType {
 /// Type representation of a transaction.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub struct Transaction {
-    r#type: TransactionType,
-    client: u16,
-    tx: u32,
-    amount: Option<FourDecimals>
+    /// [TransactionType].
+    pub r#type: TransactionType,
+    /// Client id.
+    pub client: u16,
+    /// Transaction number.
+    pub tx: u32,
+    /// Amount or None.
+    pub amount: Option<FourDecimals>
 }
 
 #[cfg(test)]
