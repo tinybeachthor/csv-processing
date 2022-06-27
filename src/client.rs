@@ -43,6 +43,14 @@ impl Client {
     pub fn total(&self) -> FourDecimals {
         self.available + self.held
     }
+    /// Get the [Client] available balance.
+    pub fn available(&self) -> FourDecimals {
+        self.available
+    }
+    /// Get the [Client] held balance.
+    pub fn held(&self) -> FourDecimals {
+        self.held
+    }
 
     /// Apply a [Transaction].
     pub fn apply(&mut self, transaction: Transaction) -> Result<(), MyError> {
