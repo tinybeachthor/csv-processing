@@ -3,29 +3,38 @@
 rustc 1.61.0 (fe5b13d68 2022-05-18)
 cargo 1.61.0 (a028ae4 2022-04-29)
 
-## completeness
+## assumptions
+
+- disputes of deposits and withdrawals are handled the same way
+- all amounts and balances are positive
+- all amounts and balances fit in u64
+- client account is locked after a chargeback and no further
+  transactions are applied to it
+
+## evaluation
+
+### completeness
 
 - read transactions from an input csv file
 - apply deposits/withdraws/disputes/resolves/chargebacks to clients
 - output the list of all clients final state to stdout
 
-## correctness
+### correctness
 
 - unit tests for serialization/deserialization
 - unit tests for balance arithmetic
 - isolation of concern between modules (most of the logic is in
   Client#apply)
-- deposit and withdrawal disputes are handled the same way, should there
-  be a difference?
 
-## robustness
+### robustness
 
 - no negative amounts/balances, u64
 - arithmetic overflow results in a panic
 - errors for low balance for withdrawal, duplicate transactions
 - duplicate disputes or resolves are silently ignored
+- quickcheck model tests for client properties
 
-## efficiency
+### efficiency
 
 - streaming processing
 - transaction amounts are stored by clients, for a long running process
@@ -34,7 +43,7 @@ cargo 1.61.0 (a028ae4 2022-04-29)
   with tasks split by client id (so chronological order of client
   transactions is preserved without extra blocking)
 
-## maintainability
+### maintainability
 
 - yes
 

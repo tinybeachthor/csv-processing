@@ -90,4 +90,41 @@ quickcheck! {
 
         client.total().integer == model
     }
+
+    fn chargeback(rounds: u8) -> bool {
+        let mut tx = 0;
+        let client_id = 0;
+
+        let mut client = Client::new(client_id);
+        let mut model = 0;
+
+        let deposit = new_deposit(client_id, tx);
+        let dispute = Transaction {
+            r#type: TransactionType::Dispute,
+            client: client_id, tx, amount: None,
+        };
+        let chargeback = Transaction {
+            r#type: TransactionType::Chargeback,
+            client: client_id, tx, amount: None,
+        };
+        tx += 1;
+
+        client.apply(deposit).unwrap();
+        client.apply(dispute).unwrap();
+        client.apply(chargeback).unwrap();
+
+        for _ in 0..rounds {
+            let deposit = new_deposit(client_id, tx);
+            tx += 1;
+            model += deposit.amount.unwrap().integer;
+            client.apply(deposit).unwrap();
+
+            let withdrawal = new_withdrawal(client_id, tx, model);
+            tx += 1;
+            model -= withdrawal.amount.unwrap().integer;
+            client.apply(withdrawal).unwrap();
+        }
+
+        client.total().integer == 0
+    }
 }
