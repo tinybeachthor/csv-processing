@@ -6,6 +6,7 @@
 //! CSV processor.
 
 mod four_decimals;
+pub use four_decimals::FourDecimals;
 
 mod transaction;
 pub use transaction::{Transaction, TransactionType};

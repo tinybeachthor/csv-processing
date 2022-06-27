@@ -10,7 +10,9 @@ const DECIMAL_DIGITS: usize = 4;
 /// Type representation of a u64 with fixed decimals.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd)]
 pub struct FourDecimals {
+    /// Integral part.
     pub integer: u64,
+    /// Decimal part.
     pub decimal: u16,
 }
 impl Default for FourDecimals {
