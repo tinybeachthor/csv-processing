@@ -5,9 +5,9 @@ cargo 1.61.0 (a028ae4 2022-04-29)
 
 ## assumptions
 
-- disputes of deposits and withdrawals are handled the same way
 - all amounts and balances are positive
 - all amounts and balances fit in u64
+- disputes of deposits and withdrawals are handled the same way
 - client account is locked after a chargeback and no further
   transactions are applied to it
 
@@ -30,7 +30,6 @@ cargo 1.61.0 (a028ae4 2022-04-29)
 
 - no negative amounts/balances, u64
 - arithmetic overflow results in a panic
-- errors for low balance for withdrawal, duplicate transactions
 - duplicate disputes or resolves are silently ignored
 - quickcheck model tests for client properties
 
