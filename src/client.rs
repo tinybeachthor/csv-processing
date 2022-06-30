@@ -62,10 +62,7 @@ impl Client {
 
         match transaction.r#type {
             TransactionType::Deposit => {
-                if let Some(_) = self.tx_amounts.insert(transaction.tx, amount) {
-                    return Err(
-                        MyError::DuplicateTransaction(self.id, transaction.tx))
-                }
+                self.tx_amounts.insert(transaction.tx, amount);
                 self.available = self.available + amount;
             },
             TransactionType::Withdrawal => {
@@ -73,10 +70,7 @@ impl Client {
                     return Err(
                         MyError::BalanceLowForWithdrawal(self.id, transaction.tx))
                 }
-                if let Some(_) = self.tx_amounts.insert(transaction.tx, amount) {
-                    return Err(
-                        MyError::DuplicateTransaction(self.id, transaction.tx))
-                }
+                self.tx_amounts.insert(transaction.tx, amount);
                 self.available = self.available - amount;
             },
             TransactionType::Dispute => {
