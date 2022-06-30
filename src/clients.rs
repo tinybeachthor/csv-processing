@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{Client, Transaction, MyError};
+use crate::{Client, Transaction};
 
 /// Container of [Client]s.
 #[derive(Debug)]
@@ -15,7 +15,7 @@ impl Clients {
         }
     }
     /// Apply a [Transaction].
-    pub fn apply(&mut self, transaction: Transaction) -> Result<(), MyError> {
+    pub fn apply(&mut self, transaction: Transaction) {
         let client_id = transaction.client;
 
         let client = self.clients

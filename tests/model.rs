@@ -42,12 +42,15 @@ quickcheck! {
             let deposit = new_deposit(client_id, tx);
             tx += 1;
             model += deposit.amount.unwrap().integer;
-            client.apply(deposit).unwrap();
+            client.apply(deposit);
 
-            let withdrawal = new_withdrawal(client_id, tx, model);
+            let withdrawal = new_withdrawal(client_id, tx, 10000);
             tx += 1;
-            model -= withdrawal.amount.unwrap().integer;
-            client.apply(withdrawal).unwrap();
+            let amount = withdrawal.amount.unwrap().integer;
+            if amount <= model {
+                model -= amount;
+            }
+            client.apply(withdrawal);
         }
 
         (client.total().integer == model)
@@ -79,14 +82,14 @@ quickcheck! {
             tx += 1;
 
             model += deposit.amount.unwrap().integer;
-            client.apply(deposit).unwrap();
+            client.apply(deposit);
             if i % 2 == 0 {
-                client.apply(resolve).unwrap();
-                client.apply(chargeback).unwrap();
+                client.apply(resolve);
+                client.apply(chargeback);
             }
             else {
-                client.apply(chargeback).unwrap();
-                client.apply(resolve).unwrap();
+                client.apply(chargeback);
+                client.apply(resolve);
             }
         }
 
@@ -115,10 +118,10 @@ quickcheck! {
             let amount = deposit.amount.unwrap().integer;
             model_available += amount;
             model_total += amount;
-            client.apply(deposit).unwrap();
+            client.apply(deposit);
 
             if i % 2 == 0 {
-                client.apply(dispute).unwrap();
+                client.apply(dispute);
                 model_available -= amount;
                 model_held += amount;
             }
@@ -152,15 +155,15 @@ quickcheck! {
             let amount = deposit.amount.unwrap().integer;
             model_available += amount;
             model_total += amount;
-            client.apply(deposit).unwrap();
+            client.apply(deposit);
 
             if i % 2 == 0 {
-                client.apply(dispute).unwrap();
+                client.apply(dispute);
                 model_available -= amount;
                 model_held += amount;
 
                 if i % 3 == 0 {
-                    client.apply(resolve).unwrap();
+                    client.apply(resolve);
                     model_available += amount;
                     model_held -= amount;
                 }
@@ -190,20 +193,20 @@ quickcheck! {
         };
         tx += 1;
 
-        client.apply(deposit).unwrap();
-        client.apply(dispute).unwrap();
-        client.apply(chargeback).unwrap();
+        client.apply(deposit);
+        client.apply(dispute);
+        client.apply(chargeback);
 
         for _ in 0..rounds {
             let deposit = new_deposit(client_id, tx);
             tx += 1;
             model += deposit.amount.unwrap().integer;
-            client.apply(deposit).unwrap();
+            client.apply(deposit);
 
             let withdrawal = new_withdrawal(client_id, tx, model);
             tx += 1;
             model -= withdrawal.amount.unwrap().integer;
-            client.apply(withdrawal).unwrap();
+            client.apply(withdrawal);
         }
 
         (client.total().integer == 0)

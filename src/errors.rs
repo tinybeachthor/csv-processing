@@ -20,6 +20,4 @@ pub enum MyError {
     },
     #[error("Expecting exactly 1 argument: path to the transactions file.")]
     WrongArguments(),
-    #[error("Client {0} : balance too low for withdrawal {1}.")]
-    BalanceLowForWithdrawal(u16, u32),
 }

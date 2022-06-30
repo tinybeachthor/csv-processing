@@ -5,7 +5,6 @@ use serde::Serialize;
 
 use crate::four_decimals::FourDecimals;
 use crate::{Transaction, TransactionType};
-use crate::MyError;
 
 #[derive(Debug, Serialize, PartialEq, Eq)]
 struct ClientRaw {
@@ -53,9 +52,9 @@ impl Client {
     }
 
     /// Apply a [Transaction].
-    pub fn apply(&mut self, transaction: Transaction) -> Result<(), MyError> {
+    pub fn apply(&mut self, transaction: Transaction) {
         if self.locked {
-            return Ok(())
+            return
         }
 
         let amount = transaction.amount.unwrap_or_default();
@@ -67,18 +66,17 @@ impl Client {
             },
             TransactionType::Withdrawal => {
                 if amount > self.available {
-                    return Err(
-                        MyError::BalanceLowForWithdrawal(self.id, transaction.tx))
+                    return
                 }
                 self.tx_amounts.insert(transaction.tx, amount);
                 self.available = self.available - amount;
             },
             TransactionType::Dispute => {
                 if !self.disputes.insert(transaction.tx) {
-                    return Ok(())
+                    return
                 };
                 let amount = match self.tx_amounts.get(&transaction.tx) {
-                    None => return Ok(()),
+                    None => return,
                     Some(amount) => amount,
                 };
                 self.available = self.available - *amount;
@@ -86,10 +84,10 @@ impl Client {
             },
             TransactionType::Resolve => {
                 if self.disputes.take(&transaction.tx).is_none() {
-                    return Ok(())
+                    return
                 }
                 let amount = match self.tx_amounts.get(&transaction.tx) {
-                    None => return Ok(()),
+                    None => return,
                     Some(amount) => amount,
                 };
                 self.held = self.held - *amount;
@@ -97,18 +95,16 @@ impl Client {
             },
             TransactionType::Chargeback => {
                 if self.disputes.take(&transaction.tx).is_none() {
-                    return Ok(())
+                    return
                 }
                 let amount = match self.tx_amounts.get(&transaction.tx) {
-                    None => return Ok(()),
+                    None => return,
                     Some(amount) => amount,
                 };
                 self.held = self.held - *amount;
                 self.locked = true;
             },
         };
-
-        Ok(())
     }
 }
 impl Into<ClientRaw> for Client {

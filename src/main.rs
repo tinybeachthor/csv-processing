@@ -26,11 +26,9 @@ fn process(input: &Path) -> Result<(), MyError> {
         .from_reader(file);
 
     let mut clients = Clients::new();
-
     for result in rdr.deserialize() {
         let transaction: Transaction = result?;
-
-        clients.apply(transaction)?;
+        clients.apply(transaction);
     }
 
     let mut wtr = csv::WriterBuilder::new()
