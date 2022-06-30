@@ -1,18 +1,15 @@
 use std::env;
 use std::path::Path;
-use std::io;
 use std::fs::File;
-
+use std::io::stdout;
 use csv;
 
-use csv_processing::{Transaction, Clients};
+use csv_processing::{Transaction, Clients, MyError};
 
-fn main() -> io::Result<()> {
+fn main() -> Result<(), MyError> {
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
-        return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Expecting 1 argument: path to the transactions file."));
+        return Err(MyError::WrongArguments())
     }
 
     let path = Path::new(&args[1]);
@@ -20,7 +17,7 @@ fn main() -> io::Result<()> {
     process(&path)
 }
 
-fn process(input: &Path) -> io::Result<()> {
+fn process(input: &Path) -> Result<(), MyError> {
     let file = File::open(input)?;
     let mut rdr = csv::ReaderBuilder::new()
         .trim(csv::Trim::All)
@@ -33,14 +30,12 @@ fn process(input: &Path) -> io::Result<()> {
     for result in rdr.deserialize() {
         let transaction: Transaction = result?;
 
-        clients
-            .apply(transaction)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        clients.apply(transaction)?;
     }
 
     let mut wtr = csv::WriterBuilder::new()
         .has_headers(true)
-        .from_writer(io::stdout());
+        .from_writer(stdout());
     for client in clients {
         wtr.serialize(client)?;
     }
